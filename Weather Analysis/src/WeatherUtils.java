@@ -19,6 +19,17 @@ public final class WeatherUtils {
             Map.entry("winddirection", "Wind direction")
     );
 
+    public String mapFieldName(String fieldName) {
+        return WeatherUtils.FIELD_NAME.get(fieldName);
+    }
+
+    /* 
+        Here we get the value of a field by its name from a record
+        We also check if the field exists and return empty string if not found
+        
+        @param record: JSONArray record from the JSON file
+        @param fieldName: Name of the field to extract
+    */
     public static String getWeatherValue(JSONArray record, String fieldName) {
         int recIdx = getIndex(fieldName);
         if (recIdx == -1)
@@ -31,6 +42,7 @@ public final class WeatherUtils {
         return "";
     }
 
+    // Here we get the index of a field by its name (For example, get the index of "airtemp")
     public static int getIndex(String fieldName) {
         for(int i = 0; i < WeatherUtils.fields.size(); ++i){
             JSONObject field = (JSONObject) WeatherUtils.fields.get(i);
@@ -41,6 +53,7 @@ public final class WeatherUtils {
         return -1;
     }
 
+    // Get field name by index (For example, get the field name at index of 4: "airtemp")
     public static String getIndexFieldName(int i) {
         JSONObject field = (JSONObject) WeatherUtils.fields.get(i);
         return field.get("id").toString();

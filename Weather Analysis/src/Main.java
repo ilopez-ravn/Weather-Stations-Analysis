@@ -21,7 +21,6 @@ public class Main {
 
         JSONArray records = (JSONArray) j.get("records");
 
-
         System.out.println("There is " + records.size() + " weather records");
 
         // From index 9 to 19 there is useful weather metrics (airtemp, etc...)
@@ -75,15 +74,19 @@ public class Main {
 
         long estimatedTime = System.nanoTime() - startTime;
 
+        // Print statistics by date and by location
         summary.getStatisticsByDate();
 
+        // Print statistics by locations
         summary.getStatisticsByLocation();
 
+        // Print overall statistics
         summary.getOverallStatistics();
 
         System.out.println("\n\n\nNumber of locations: " + summary.getNumberOfLocations() );
         summary.printLocationsData();
 
+        // Print file and json reading time (Used nanoTime for accuracy) 
         System.out.println("Elapsed Time: " + estimatedTime / 1_000_000_000.0 + " s");
 
 

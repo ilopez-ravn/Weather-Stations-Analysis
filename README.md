@@ -1,19 +1,24 @@
 # Weather-Stations-Analysis
 This script reads, parses and processes a record file containing weather measurements.
 
-For every record we read its location based on the field "dev_id" (we could also do it by its location or name), then, in the class `WeatherSummary` we save it to a list of locations so we can separate and get the statistics for every location, the same is done for the per day statistics.
+For every record we read its location based on the field "dev_id" (we could also do it by its GPS coords or name), then, in the class `WeatherSummary` we save it to a list of locations so we can separate and get the statistics for every location, the same is done for the per day statistics.
 
 We return the following statistical data about it:
-* Average, min and max values for each location
 * Every average, min and max values for each location in a specific date
+* Average, min and max values for each location
+* Overall average, min and max values
 
 
 # Dependencies
-* **json-simple v1.1.1:** This package was added to the project to Parse and extract the weather data inside the json file
+* **json-simple v1.1.1:** This package was added to the project to parse and extract the weather data inside the json file, we don't need a complex data mapping, so this package will do fine
 
 # Classes created
 ## WeatherUtils
-`WeatherUtils` is a utility class that is not instanciated because we use `final` keyword. Here we will save the fields list and the Map for fields display name. we also have functions like `getWeatherValue` where we search for the field name passed in the record array.
+`WeatherUtils` is a utility class that is not instanciated because we use the `final` keyword. 
+
+Here we will save the `fields` list and the `Map` for fields display name. we also have functions like `getWeatherValue` where we search for the field name passed in the record array.
+
+> **Note:** We chose the `fields` variable to be assignable so we can fetch the json and "similar" ones regardless of the order of the fields or if there is one or several missing fields from the records :fire:
 
 ## WeatherLocation
 In this class we will search the records based on its location (dev_id). 

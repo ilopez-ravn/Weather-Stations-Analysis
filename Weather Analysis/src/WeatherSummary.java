@@ -9,7 +9,13 @@ public class WeatherSummary {
     Map<String, List<WeatherLocation>> weatherPerDay = new HashMap<>();
 
 
+    /*
+        Get or create a WeatherLocation by its dev_id
+        If the location does not exist we create it from the record data and add it to the locations list
 
+        @param record: JSONArray record from the JSON file
+        @param devId: Device ID of the weather location
+    */
     public WeatherLocation getOrCreateLocation(JSONArray record, String devId) {
         // search for location via dev_id
         Optional<WeatherLocation> wLocation = this.weatherLocations.stream()
@@ -25,6 +31,16 @@ public class WeatherSummary {
         return weatherLocation;
     }
 
+    /*
+        Get or create a WeatherLocation for the weather statistics per day by its dev_id and date
+        First we check if the date exists, create it if not
+        Then we check if the location exists for that date
+        If the location does not exist we create it from the record data and add it to the locations list for that date
+
+        @param record: JSONArray record from the JSON file
+        @param recordDate: Date of the weather record
+        @param devId: Device ID of the weather location
+    */
     public WeatherLocation getOrCreateLocationByDate(JSONArray record, String recordDate, String devId) {
         // search for register via recordDate
         List<WeatherLocation> listOfLocations;
@@ -40,9 +56,8 @@ public class WeatherSummary {
             if (wLocation.isPresent())
                 return wLocation.get();
 
-        } else {
+        } else
             listOfLocations = new ArrayList<>();
-        }
 
         // Create Location
         weatherLocation = this.createLocation(record);
@@ -52,6 +67,7 @@ public class WeatherSummary {
         return weatherLocation;
     }
 
+    // Simple location creation used in getOrCreateLocation and getOrCreateLocationByDate
     public WeatherLocation createLocation(JSONArray record) {
         String devId = WeatherUtils.getWeatherValue(record, "dev_id");
         String name = WeatherUtils.getWeatherValue(record, "name");
@@ -59,6 +75,7 @@ public class WeatherSummary {
 
         return new WeatherLocation(devId, name, location);
     }
+
 
     public int getNumberOfLocations() {
         return weatherLocations.size();
@@ -70,6 +87,12 @@ public class WeatherSummary {
         }
     }
 
+    /*
+        Calculate average and print statistics for a given location
+        We use this function in getStatisticsByDate and getStatisticsByLocation
+
+        @param location: WeatherLocation to calculate statistics
+    */
     private void getLocationWeatherData(WeatherLocation location) {
         Set<String> fields = location.averages.keySet();
         System.out.printf("Data from %s %n%n", location.getName() + " at location (" + location.getLocation() + ")");
@@ -84,14 +107,16 @@ public class WeatherSummary {
             if (location.max.containsKey(fieldName))
                 max = String.valueOf(location.max.get(fieldName));
 
-            System.out.printf("* %s: AVG=%s  MIN=%s  MAX=%s %n", mapFieldName(fieldName), avg, min, max);
+            System.out.printf("* %s: AVG=%s  MIN=%s  MAX=%s %n", WeatherUtils.mapFieldName(fieldName), avg, min, max);
         }
     }
 
-    public String mapFieldName(String fieldName) {
-        return WeatherUtils.FIELD_NAME.get(fieldName);
-    }
-
+    
+    
+    /*
+        Calculate and print overall statistics from all locations
+        Basically sum averages and search for the min and max location of each field
+    */
     public void getOverallStatistics() {
         if(weatherLocations.isEmpty()) {
             System.out.println("There is no locations data");
@@ -119,10 +144,14 @@ public class WeatherSummary {
             }
 
             average /= weatherLocations.size();
-            System.out.printf("* %s: AVG=%02.2f  MIN=%02.2f  MAX=%02.2f %n", mapFieldName(fieldName), average, min, max);
+            System.out.printf("* %s: AVG=%02.2f  MIN=%02.2f  MAX=%02.2f %n", WeatherUtils.mapFieldName(fieldName), average, min, max);
         }
     }
 
+    /*
+        Print statistics by location
+        We use getLocationWeatherData to print and calculate each location statistics
+    */
     public void getStatisticsByLocation() {
         if(weatherLocations.isEmpty()) {
             System.out.println("There is no locations data");
@@ -137,6 +166,10 @@ public class WeatherSummary {
     }
 
 
+    /*
+        Print statistics by date
+        We use getLocationWeatherData to print and calculate each location statistics per day
+    */
     public void getStatisticsByDate() {
         Set<String> days = weatherPerDay.keySet();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -145,18 +178,19 @@ public class WeatherSummary {
         Comparator<String> dateComparator = Comparator.comparing(
                 dateStr -> LocalDate.parse(dateStr, formatter)
         );
+        List<String> daysList = days.stream().sorted(dateComparator).toList();
 
 
         System.out.println("Statistics per day\n\n");
 
-        List<String> daysList = days.stream().sorted(dateComparator).toList();
-
         for(var day: daysList) {
             LocalDate date = LocalDate.parse(day, formatter);
+            // this string format is in spanish, for now...
             System.out.println("\n\n" + date.format(DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'del' yyyy")) + ": \n");
 
             List<WeatherLocation> weatherLocationsDay = weatherPerDay.get(day);
 
+            // Print statistics for each location in that day
             for(var location : weatherLocationsDay) {
                 getLocationWeatherData(location);
                 System.out.println("\n\n");
