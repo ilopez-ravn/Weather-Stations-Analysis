@@ -49,7 +49,6 @@ public class Main {
 
             Map<String, String> recordData = new HashMap<>();
 
-
             // Extract weather metrics
             for(int i = startIdx; i <= endIdx; ++i) {
                 String fieldName = WeatherUtils.getIndexFieldName(i);
@@ -63,31 +62,56 @@ public class Main {
                 // Save field into both main location and location per day
                 wLocation.saveRecordData(fieldName, result);
                 weatherDay.saveRecordData(fieldName, result);
-
             }
 
             wLocation.addRecordToRecordList(recordData);
             weatherDay.addRecordToRecordList(recordData);
-
         }
 
 
         long estimatedTime = System.nanoTime() - startTime;
 
-        // Print statistics by date and by location
-        summary.getStatisticsByDate();
-
-        // Print statistics by locations
-        summary.getStatisticsByLocation();
-
-        // Print overall statistics
-        summary.getOverallStatistics();
-
         System.out.println("\n\n\nNumber of locations: " + summary.getNumberOfLocations() );
         summary.printLocationsData();
 
-        // Print file and json reading time (Used nanoTime for accuracy) 
+        // Print file and JSON reading time (Used nanoTime for accuracy)
         System.out.println("Elapsed Time: " + estimatedTime / 1_000_000_000.0 + " s");
+
+        Scanner s = new Scanner(System.in);
+
+        while (true) {
+            drawMenu();
+            String op = s.nextLine();
+
+            if(op.equalsIgnoreCase("q")) {
+                System.out.println("Goodbye!");
+                s.close();
+                return;
+            }
+
+            switch (op) {
+                case "1" -> summary.getOverallStatistics();
+                case "2" -> summary.getStatisticsByLocation();
+                case "3" -> summary.getStatisticsByDate();
+                case "4" -> summary.getStatisticsByPeriod(s);
+                default -> System.out.println("Invalid option, please try again.\n\n");
+            }
+
+        }
+        
+    }
+
+    public static void drawMenu() {
+        System.out.print("""
+
+            
+               Weather Statistics Menu
+
+               1. Get Overall Statistics
+               2. Get Location Statistics
+               3. Get Per day Statistics
+               4. Get Statistics by date period
+               Enter a number between 1 to 4 or press 'q' to exit: """);
 
 
     }

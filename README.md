@@ -3,10 +3,14 @@ This script reads, parses and processes a record file containing weather measure
 
 For every record we read its location based on the field "dev_id" (we could also do it by its GPS coords or name), then, in the class `WeatherSummary` we save it to a list of locations so we can separate and get the statistics for every location, the same is done for the per day statistics.
 
+We present a menu option to show the statistical data allowing the user to select the data they want to see until they press 'q' to exit the menu and finish the program
+
+
 We return the following statistical data about it:
 * Every average, min and max values for each location in a specific date
 * Average, min and max values for each location
 * Overall average, min and max values
+* Statisctis by date range period
 
 
 # Dependencies
