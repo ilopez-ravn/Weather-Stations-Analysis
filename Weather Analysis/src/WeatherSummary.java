@@ -2,6 +2,7 @@ import org.json.simple.JSONArray;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WeatherSummary {
     // Saves List of locations, where each location has its own records
@@ -97,7 +98,7 @@ public class WeatherSummary {
         @param location: WeatherLocation to calculate statistics
     */
     private void getLocationWeatherData(WeatherLocation location) {
-        Set<String> fields = location.averages.keySet();
+        List<String> fields = location.averages.keySet().stream().sorted().toList();
         System.out.printf("Data from %s %n%n", location.getName() + " at location (" + location.getLocation() + ")");
 
         for(var fieldName : fields) {
@@ -128,7 +129,7 @@ public class WeatherSummary {
         System.out.println("Overall Statistics\n\n");
 
         WeatherLocation weatherLocation = weatherLocations.get(0);
-        Set<String> fields = weatherLocation.averages.keySet();
+        List<String> fields = weatherLocation.averages.keySet().stream().sorted().toList();
         for(var fieldName : fields) {
             double average = 0.0;
             double min = Double.MAX_VALUE;
@@ -139,7 +140,6 @@ public class WeatherSummary {
 
                 if (location.min.containsKey(fieldName) && location.min.get(fieldName) < min )
                     min = location.min.get(fieldName);
-
 
                 if (location.max.containsKey(fieldName) && location.max.get(fieldName) < max )
                     max = location.max.get(fieldName);
