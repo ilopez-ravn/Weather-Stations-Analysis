@@ -38,7 +38,7 @@ public class Main {
 
             // We create a Map<field, value> because some records may not have data
 
-            // Extract date ("2021-11-13T11:59:05+00:00")
+            // Extract date ("2021-11-13T11:59:05+00:00") and transform to dd-MM-yyyy
             String recordDate = WeatherUtils.getWeatherValue(record, "time");
             if (recordDate.isEmpty()) continue;
             String[] dateList =  recordDate.split("T")[0].split("-");

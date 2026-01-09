@@ -4,8 +4,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class WeatherSummary {
+    // Saves List of locations, where each location has its own records
     List<WeatherLocation> weatherLocations = new ArrayList<>();
 
+    // Save weather locations per day for statistics by date
+    // The Map is like Map<date, List<WeatherLocation>>
     Map<String, List<WeatherLocation>> weatherPerDay = new HashMap<>();
 
 

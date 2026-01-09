@@ -3,8 +3,10 @@ import org.json.simple.JSONObject;
 
 import java.util.Map;
 
+// Utility class for field name mapping and value extraction from JSON Objects
 public final class WeatherUtils {
     public static JSONArray fields;
+
     public static final Map<String, String> FIELD_NAME = Map.ofEntries(
             Map.entry("atmosphericpressure", "Atmospheric pressure"),
             Map.entry("gustspeed", "Gust speed"),
