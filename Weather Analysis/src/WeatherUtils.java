@@ -21,7 +21,7 @@ public final class WeatherUtils {
             Map.entry("winddirection", "Wind direction")
     );
 
-    public String mapFieldName(String fieldName) {
+    public static String mapFieldName(String fieldName) {
         return WeatherUtils.FIELD_NAME.get(fieldName);
     }
 
