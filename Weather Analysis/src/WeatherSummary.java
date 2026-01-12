@@ -1,4 +1,5 @@
 import org.json.simple.JSONArray;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -17,9 +18,9 @@ public class WeatherSummary {
      * Get or create a WeatherLocation by its dev_id
      * If the location does not exist we create it from the record data and add it
      * to the locations list
-     * 
+     *
      * @param record: JSONArray record from the JSON file
-     * 
+     *
      * @param devId: Device ID of the weather location
      */
     public WeatherLocation getOrCreateLocation(JSONArray record, String devId) {
@@ -44,11 +45,11 @@ public class WeatherSummary {
      * Then we check if the location exists for that date
      * If the location does not exist we create it from the record data and add it
      * to the locations list for that date
-     * 
+     *
      * @param record: JSONArray record from the JSON file
-     * 
+     *
      * @param recordDate: Date of the weather record
-     * 
+     *
      * @param devId: Device ID of the weather location
      */
     public WeatherLocation getOrCreateLocationByDate(JSONArray record, String recordDate, String devId) {
@@ -99,7 +100,7 @@ public class WeatherSummary {
     /*
      * Calculate average and print statistics for a given location
      * We use this function in getStatisticsByDate and getStatisticsByLocation
-     * 
+     *
      * @param location: WeatherLocation to calculate statistics
      */
     private void getLocationWeatherData(WeatherLocation location) {
@@ -247,7 +248,7 @@ public class WeatherSummary {
         }
 
         // check that if the start is before the end period
-        if (startPeriod.compareTo(endPeriod) >= 0) {
+        if (startPeriod.compareTo(endPeriod) > 0) {
             System.out.println("\u001B[31mThe start period can´t be after or equal to the end period \u001B[0m");
             getStatisticsByPeriod(s);
             return;
@@ -274,12 +275,16 @@ public class WeatherSummary {
                 .toList();
 
 
-        if(weatherLocations.isEmpty()) {
+        if (weatherLocations.isEmpty()) {
             System.out.println("\n\nThere is no data in the period provided :( \n\n");
             return;
         }
 
-        System.out.println("\n\nWeather information: \n\n");
+        int numberOfRecords = 0;
+        for (var location : weatherLocations)
+            numberOfRecords += location.weatherRecords.size();
+
+        System.out.printf("%n%nWeather information from %d records: %n%n", numberOfRecords);
 
         getStatisticsByLocations(weatherLocations);
     }

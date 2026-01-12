@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WeatherLocation  {
+public class WeatherLocation {
     String name;
     String dev_id;
     String location;
@@ -45,20 +45,20 @@ public class WeatherLocation  {
         try {
             Double Result = Double.parseDouble(result);
 
-            if(averages.containsKey(fieldName))
+            if (averages.containsKey(fieldName))
                 averages.put(fieldName, averages.get(fieldName) + Result);
             else
                 averages.put(fieldName, Result);
 
             // Save min
-            if(min.containsKey(fieldName)) {
+            if (min.containsKey(fieldName)) {
                 if (min.get(fieldName) > Result)
                     min.put(fieldName, Result);
             } else
                 min.put(fieldName, Result);
 
             // Save max
-            if(max.containsKey(fieldName)) {
+            if (max.containsKey(fieldName)) {
                 if (max.get(fieldName) < Result)
                     max.put(fieldName, Result);
             } else

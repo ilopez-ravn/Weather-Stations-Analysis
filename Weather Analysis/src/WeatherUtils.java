@@ -27,16 +27,16 @@ public final class WeatherUtils {
     );
 
     public static final List<DateTimeFormatter> dateFormatters = new ArrayList<>(Arrays.asList(
-        DateTimeFormatter.ofPattern("dd/MM/yyyy"),
-        DateTimeFormatter.ofPattern("dd-MM-yyyy"),
-        DateTimeFormatter.ofPattern("yyyy/MM/dd"),
-        DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-        DateTimeFormatter.ofPattern("MM/dd/yyyy"),
-        DateTimeFormatter.ofPattern("MM-dd-yyyy")
+            DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+            DateTimeFormatter.ofPattern("dd-MM-yyyy"),
+            DateTimeFormatter.ofPattern("yyyy/MM/dd"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+            DateTimeFormatter.ofPattern("MM/dd/yyyy"),
+            DateTimeFormatter.ofPattern("MM-dd-yyyy")
     ));
 
     public static LocalDate getDateFromString(String stringDate) {
-        for(var formatter : WeatherUtils.dateFormatters) {
+        for (var formatter : WeatherUtils.dateFormatters) {
             try {
                 return LocalDate.parse(stringDate, formatter);
             } catch (Exception e) {
@@ -71,7 +71,7 @@ public final class WeatherUtils {
 
     // Here we get the index of a field by its name (For example, get the index of "airtemp")
     public static int getIndex(String fieldName) {
-        for(int i = 0; i < WeatherUtils.fields.size(); ++i){
+        for (int i = 0; i < WeatherUtils.fields.size(); ++i) {
             JSONObject field = (JSONObject) WeatherUtils.fields.get(i);
             if (field.get("id").equals(fieldName))
                 return i;

@@ -41,7 +41,7 @@ public class Main {
             // Extract date ("2021-11-13T11:59:05+00:00") and transform to dd-MM-yyyy
             String recordDate = WeatherUtils.getWeatherValue(record, "time");
             if (recordDate.isEmpty()) continue;
-            String[] dateList =  recordDate.split("T")[0].split("-");
+            String[] dateList = recordDate.split("T")[0].split("-");
             recordDate = dateList[2] + "-" + dateList[1] + "-" + dateList[0];
 
             WeatherLocation weatherDay = summary.getOrCreateLocationByDate(record, recordDate, dev_id);
@@ -50,7 +50,7 @@ public class Main {
             Map<String, String> recordData = new HashMap<>();
 
             // Extract weather metrics
-            for(int i = startIdx; i <= endIdx; ++i) {
+            for (int i = startIdx; i <= endIdx; ++i) {
                 String fieldName = WeatherUtils.getIndexFieldName(i);
                 if (fieldName.isBlank()) continue;
 
@@ -71,7 +71,7 @@ public class Main {
 
         long estimatedTime = System.nanoTime() - startTime;
 
-        System.out.println("\n\n\nNumber of locations: " + summary.getNumberOfLocations() );
+        System.out.println("\n\n\nNumber of locations: " + summary.getNumberOfLocations());
         summary.printLocationsData();
 
         // Print file and JSON reading time (Used nanoTime for accuracy)
@@ -83,7 +83,7 @@ public class Main {
             drawMenu();
             String op = s.nextLine();
 
-            if(op.equalsIgnoreCase("q")) {
+            if (op.equalsIgnoreCase("q")) {
                 System.out.println("Goodbye!");
                 s.close();
                 return;
@@ -98,20 +98,20 @@ public class Main {
             }
 
         }
-        
+
     }
 
     public static void drawMenu() {
         System.out.print("""
-
-            
-               Weather Statistics Menu
-
-               1. Get Overall Statistics
-               2. Get Location Statistics
-               3. Get Per day Statistics
-               4. Get Statistics by date period
-               Enter a number between 1 to 4 or press 'q' to exit: """);
+                
+                
+                Weather Statistics Menu
+                
+                1. Get Overall Statistics
+                2. Get Location Statistics
+                3. Get Per day Statistics
+                4. Get Statistics by date period
+                Enter a number between 1 to 4 or press 'q' to exit: """);
 
 
     }

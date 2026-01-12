@@ -10,7 +10,7 @@ We return the following statistical data about it:
 * Every average, min and max values for each location in a specific date
 * Average, min and max values for each location
 * Overall average, min and max values
-* Statisctis by date range period
+* Statistics by date range period
 
 
 # Dependencies
