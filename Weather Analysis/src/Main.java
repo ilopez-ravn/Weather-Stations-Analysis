@@ -32,6 +32,14 @@ public class Main {
         for (var object : records) {
             JSONArray record = (JSONArray) object;
 
+            // Validate record data
+            if (
+                    WeatherUtils.getWeatherValue(record, "time").isBlank()
+                            || WeatherUtils.getWeatherValue(record, "dev_id").isBlank()
+                            || WeatherUtils.getWeatherValue(record, "keep_record").isBlank()
+                            || !WeatherUtils.getWeatherValue(record, "keep_record").equalsIgnoreCase("y")
+            ) continue;
+
             // Extract weather location by dev_id but can be done by location also
             String dev_id = WeatherUtils.getWeatherValue(record, "dev_id");
             WeatherLocation wLocation = summary.getOrCreateLocation(record, dev_id);
@@ -71,7 +79,8 @@ public class Main {
 
         long estimatedTime = System.nanoTime() - startTime;
 
-        System.out.println("\n\n\nNumber of locations: " + summary.getNumberOfLocations());
+        System.out.println("\n\n\nNumber of valid weather records:" + summary.getNumberOfValidRecords());
+        System.out.printf("We found %d location(s): ", summary.getNumberOfLocations());
         summary.printLocationsData();
 
         // Print file and JSON reading time (Used nanoTime for accuracy)
@@ -103,7 +112,7 @@ public class Main {
 
     public static void drawMenu() {
         System.out.print("""
-                
+                \u001B[32m
                 
                 Weather Statistics Menu
                 
@@ -111,7 +120,7 @@ public class Main {
                 2. Get Location Statistics
                 3. Get Per day Statistics
                 4. Get Statistics by date period
-                Enter a number between 1 to 4 or press 'q' to exit: """);
+                Enter a number between 1 to 4 or press 'q' to exit: \u001B[37m""");
 
 
     }

@@ -3,15 +3,14 @@ import org.json.simple.JSONArray;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WeatherSummary {
     // Saves List of locations, where each location has its own records
-    List<WeatherLocation> weatherLocations = new ArrayList<>();
+    private List<WeatherLocation> weatherLocations = new ArrayList<>();
 
     // Save weather locations per day for statistics by date
     // The Map is like Map<date, List<WeatherLocation>>
-    Map<String, List<WeatherLocation>> weatherPerDay = new HashMap<>();
+    private Map<String, List<WeatherLocation>> weatherPerDay = new HashMap<>();
 
 
     /*
@@ -104,18 +103,22 @@ public class WeatherSummary {
      * @param location: WeatherLocation to calculate statistics
      */
     private void getLocationWeatherData(WeatherLocation location) {
-        List<String> fields = location.averages.keySet().stream().sorted().toList();
+        Map<String, Double> averageMap = location.getAverages();
+        Map<String, Double> minMap = location.getMin();
+        Map<String, Double> maxMap = location.getMax();
+
+        List<String> fields = averageMap.keySet().stream().sorted().toList();
         System.out.printf("Data from %s %n%n", location.getName() + " at location (" + location.getLocation() + ")");
 
         for (var fieldName : fields) {
             String avg = "--", min = "--", max = "--";
-            if (location.averages.containsKey(fieldName))
-                avg = String.format("%02.2f", (location.averages.get(fieldName) / location.weatherRecords.size()));
+            if (averageMap.containsKey(fieldName))
+                avg = String.format("%02.2f", (averageMap.get(fieldName) / location.getWeatherRecords().size()));
 
-            if (location.min.containsKey(fieldName))
-                min = String.valueOf(location.min.get(fieldName));
-            if (location.max.containsKey(fieldName))
-                max = String.valueOf(location.max.get(fieldName));
+            if (minMap.containsKey(fieldName))
+                min = String.valueOf(minMap.get(fieldName));
+            if (maxMap.containsKey(fieldName))
+                max = String.valueOf(maxMap.get(fieldName));
 
             System.out.printf("* %s: AVG=%s  MIN=%s  MAX=%s %n", WeatherUtils.mapFieldName(fieldName), avg, min, max);
         }
@@ -137,21 +140,26 @@ public class WeatherSummary {
 
     private void getStatisticsByLocations(List<WeatherLocation> weatherLocations) {
         WeatherLocation weatherLocation = weatherLocations.get(0);
-        List<String> fields = weatherLocation.averages.keySet().stream().sorted().toList();
+        List<String> fields = weatherLocation.getAverages().keySet().stream().sorted().toList();
         for (var fieldName : fields) {
             double average = 0.0;
             double min = Double.MAX_VALUE;
             double max = Double.MIN_VALUE;
+
+
             for (var location : weatherLocations) {
-                if (location.averages.containsKey(fieldName))
+                Map<String, Double> averageMap = location.getAverages();
+                Map<String, Double> minMap = location.getMin();
+                Map<String, Double> maxMap = location.getMax();
+                if (averageMap.containsKey(fieldName))
                     average += Double.parseDouble(
-                            String.valueOf(location.averages.get(fieldName) / location.weatherRecords.size()));
+                            String.valueOf(averageMap.get(fieldName) / location.getWeatherRecords().size()));
 
-                if (location.min.containsKey(fieldName) && location.min.get(fieldName) < min)
-                    min = location.min.get(fieldName);
+                if (minMap.containsKey(fieldName) && minMap.get(fieldName) < min)
+                    min = minMap.get(fieldName);
 
-                if (location.max.containsKey(fieldName) && location.max.get(fieldName) < max)
-                    max = location.max.get(fieldName);
+                if (maxMap.containsKey(fieldName) && maxMap.get(fieldName) < max)
+                    max = maxMap.get(fieldName);
 
             }
 
@@ -282,10 +290,16 @@ public class WeatherSummary {
 
         int numberOfRecords = 0;
         for (var location : weatherLocations)
-            numberOfRecords += location.weatherRecords.size();
+            numberOfRecords += location.getWeatherRecords().size();
 
         System.out.printf("%n%nWeather information from %d records: %n%n", numberOfRecords);
 
         getStatisticsByLocations(weatherLocations);
+    }
+
+    public Integer getNumberOfValidRecords() {
+        return weatherLocations.stream()
+                .map(location -> location.getWeatherRecords().size())
+                .reduce(0, Integer::sum);
     }
 }

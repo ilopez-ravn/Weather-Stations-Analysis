@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.Map;
 
 public class WeatherLocation {
-    String name;
-    String dev_id;
-    String location;
+    private String name;
+    private String dev_id;
+    private String location;
 
     // save plain records (weather measurements)
-    List<Map<String, String>> weatherRecords = new ArrayList<>();
+    private List<Map<String, String>> weatherRecords = new ArrayList<>();
 
     // For each field have a map for its average, min and max
-    Map<String, Double> averages = new HashMap<>();
-    Map<String, Double> min = new HashMap<>();
-    Map<String, Double> max = new HashMap<>();
+    private Map<String, Double> averages = new HashMap<>();
+    private Map<String, Double> min = new HashMap<>();
+    private Map<String, Double> max = new HashMap<>();
 
     WeatherLocation(String dev_id, String name, String location) {
         this.dev_id = dev_id;
@@ -32,6 +32,22 @@ public class WeatherLocation {
 
     public String getLocation() {
         return location;
+    }
+
+    public List<Map<String, String>> getWeatherRecords() {
+        return weatherRecords;
+    }
+
+    public Map<String, Double> getAverages() {
+        return averages;
+    }
+
+    public Map<String, Double> getMin() {
+        return min;
+    }
+
+    public Map<String, Double> getMax() {
+        return max;
     }
 
     /*
@@ -77,8 +93,8 @@ public class WeatherLocation {
     @Override
     public String toString() {
         return "Name='" + name + "'\n" +
-                "Location='" + location + "'\n" +
-                "Dev_id='" + dev_id + "'\n";
+                "GPS Location='" + location + "'\n" +
+                "Device id='" + dev_id + "'\n";
     }
 
 }
