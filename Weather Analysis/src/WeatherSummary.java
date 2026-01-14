@@ -130,7 +130,7 @@ public class WeatherSummary {
      */
     public void getOverallStatistics() {
         if (weatherLocations.isEmpty()) {
-            System.out.println("There is no locations data");
+            System.out.println("There is no location's data");
         }
 
         System.out.println("Overall Statistics\n\n");
@@ -175,7 +175,7 @@ public class WeatherSummary {
      */
     public void getStatisticsByLocation() {
         if (weatherLocations.isEmpty()) {
-            System.out.println("There is no locations data");
+            System.out.println("There is no location's data");
         }
 
         System.out.println("Statistics by location\n\n");
