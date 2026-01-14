@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -85,7 +84,7 @@ public class Main {
         // Loading JSON with jackson
         startTime = System.nanoTime();
         ObjectMapper mapper = new ObjectMapper();
-        WeatherJSONStructure weatherStruct = mapper.readValue(new FileReader("D:\\ISRAEL_PROGRAMACION\\RAVN\\JAVA_COURSE\\Weather-Stations-Analysis\\Weather Analysis\\files\\WeatherStations.json"), WeatherJSONStructure.class);
+        WeatherJSONStructure weatherStruct = mapper.readValue(new FileReader("files/WeatherStations.json"), WeatherJSONStructure.class);
 
         WeatherUtils.saveFields(weatherStruct.getFields());
 
