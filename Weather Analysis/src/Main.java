@@ -1,13 +1,14 @@
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
 
 import org.json.simple.JSONObject;
 
 import org.json.simple.parser.*;
+import tools.jackson.databind.ObjectMapper;
 
 public class Main {
     public static void main(String[] args) throws IOException, ParseException {
@@ -22,13 +23,12 @@ public class Main {
 
         JSONArray records = (JSONArray) j.get("records");
 
-        System.out.println("There are " + records.size() + " weather records");
-
         // From index 9 to 19 there is useful weather metrics (airtemp, etc...)
         int startIdx = 9, endIdx = 19;
 
         // In summary we save records and metrics data by date and location
         WeatherSummary summary = new WeatherSummary();
+
 
         for (var object : records) {
             JSONArray record = (JSONArray) object;
@@ -60,6 +60,7 @@ public class Main {
 
             // Extract weather metrics
             for (int i = startIdx; i <= endIdx; ++i) {
+                // String fieldName = WeatherUtils.getIndexFieldName(i);
                 String fieldName = WeatherUtils.getIndexFieldName(i);
                 if (fieldName.isBlank()) continue;
 
@@ -78,14 +79,68 @@ public class Main {
         }
 
         // Transform from Nano to milli, because transforming it to seconds, removes the decimal part, which is important
-        double estimatedTime = TimeUnit.NANOSECONDS.toMillis (System.nanoTime() - startTime) / 1000.0;
+        WeatherUtils.calculateTimeSince(startTime, "(JSON-SIMPLE) Time for loading data");
+
+
+        // Loading JSON with jackson
+        startTime = System.nanoTime();
+        ObjectMapper mapper = new ObjectMapper();
+        WeatherJSONStructure weatherStruct = mapper.readValue(new FileReader("D:\\ISRAEL_PROGRAMACION\\RAVN\\JAVA_COURSE\\Weather-Stations-Analysis\\Weather Analysis\\files\\WeatherStations.json"), WeatherJSONStructure.class);
+
+        WeatherUtils.saveFields(weatherStruct.getFields());
+
+        List<String> fieldIds = new ArrayList<>(endIdx - startIdx + 1);
+        for (int i = startIdx; i <= endIdx; ++i) {
+            String fieldId = weatherStruct.getFields().get(i).getId();
+            if (!fieldId.isBlank()) {
+                fieldIds.add(fieldId);
+            }
+        }
+
+        summary = new WeatherSummary();
+
+        for (var record : weatherStruct.getRecords()) {
+
+            String recordDate = WeatherUtils.getWeatherValueJackson(record, "time");
+            String dev_id = WeatherUtils.getWeatherValueJackson(record, "dev_id");
+            // Validate record data
+            if (
+                    recordDate.isBlank()
+                            || dev_id.isBlank()
+            ) continue;
+
+            // Extract weather location by dev_id but can be done by location also
+            WeatherLocation wLocation = summary.getOrCreateLocationJackson(record, dev_id);
+
+            // Extract date ("2021-11-13T11:59:05+00:00") and transform to dd-MM-yyyy
+            String[] dateList = recordDate.split("T")[0].split("-");
+            recordDate = dateList[2] + "-" + dateList[1] + "-" + dateList[0];
+
+            WeatherLocation weatherDay = summary.getOrCreateLocationByDateJackson(record, recordDate, dev_id);
+
+
+            Map<String, String> recordData = new HashMap<>();
+
+            // Extract weather metrics
+            for (String fieldName : fieldIds) {
+                String result = WeatherUtils.getWeatherValueJackson(record, fieldName);
+                if (result.isBlank()) continue;
+
+                recordData.put(fieldName, result);
+
+                // Save field into both main location and location per day
+                wLocation.saveRecordData(fieldName, result);
+                weatherDay.saveRecordData(fieldName, result);
+            }
+
+            wLocation.addRecordToRecordList(recordData);
+            weatherDay.addRecordToRecordList(recordData);
+        }
+        WeatherUtils.calculateTimeSince(startTime, "(JACKSON) Time for loading data");
 
         System.out.println("\n\n\nNumber of valid weather records:" + summary.getNumberOfValidRecords());
         System.out.printf("We found %d location(s): ", summary.getNumberOfLocations());
         summary.printLocationsData();
-
-        // Print file and JSON reading time (Used nanoTime for accuracy)
-        System.out.printf("Elapsed Time: %02.3f seconds", estimatedTime);
 
         Scanner s = new Scanner(System.in);
 

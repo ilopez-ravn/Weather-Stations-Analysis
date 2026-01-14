@@ -3,14 +3,13 @@ import org.json.simple.JSONObject;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 // Utility class for field name mapping and value extraction from JSON Objects
 public final class WeatherUtils {
     public static JSONArray fields;
+    public static Map<String, Integer> mapFields = new HashMap<>();
 
     public static final Map<String, String> FIELD_NAME_FORMAT = Map.ofEntries(
             Map.entry("atmosphericpressure", "Atmospheric pressure"),
@@ -46,6 +45,14 @@ public final class WeatherUtils {
         return null;
     }
 
+    public static void calculateTimeSince(long startTime, String message) {
+        double estimatedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime) / 1000.0;
+
+        // Print file and JSON reading time (Used nanoTime for accuracy)
+        System.out.printf("%s: %02.3f seconds%n", message, estimatedTime);
+    }
+
+
     public static String mapFieldName(String fieldName) {
         return WeatherUtils.FIELD_NAME_FORMAT.get(fieldName);
     }
@@ -69,7 +76,14 @@ public final class WeatherUtils {
         return "";
     }
 
-    // Here we get the index of a field by its name (For example, get the index of "airtemp")
+    public static String getWeatherValueJackson(List<String> record, String fieldName) {
+        String result = record.get(mapFields.get(fieldName));
+        if (result != null && !result.isEmpty())
+            return result;
+
+        return "";
+    }
+
     public static int getIndex(String fieldName) {
         for (int i = 0; i < WeatherUtils.fields.size(); ++i) {
             JSONObject field = (JSONObject) WeatherUtils.fields.get(i);
@@ -84,6 +98,10 @@ public final class WeatherUtils {
     public static String getIndexFieldName(int i) {
         JSONObject field = (JSONObject) WeatherUtils.fields.get(i);
         return field.get("id").toString();
+    }
 
+    public static void saveFields(List<JSONFields> fields) {
+        for (int i = 0; i < fields.size(); ++i)
+            WeatherUtils.mapFields.put(fields.get(i).getId(), i);
     }
 }

@@ -37,6 +37,21 @@ public class WeatherSummary {
         return weatherLocation;
     }
 
+    public WeatherLocation getOrCreateLocationJackson(List<String> record, String devId) {
+        // search for location via dev_id
+        Optional<WeatherLocation> wLocation = this.weatherLocations.stream()
+                .filter((wl) -> wl.getDev_id().equals(devId))
+                .findAny();
+
+        if (wLocation.isPresent())
+            return wLocation.get();
+
+        // Get data to create new location add it to list and return it
+        WeatherLocation weatherLocation = this.createLocationJackson(record);
+        weatherLocations.add(weatherLocation);
+        return weatherLocation;
+    }
+
     /*
      * Get or create a WeatherLocation for the weather statistics per day by its
      * dev_id and date
@@ -77,11 +92,45 @@ public class WeatherSummary {
         return weatherLocation;
     }
 
+    public WeatherLocation getOrCreateLocationByDateJackson(List<String> record, String recordDate, String devId) {
+        // search for register via recordDate
+        List<WeatherLocation> listOfLocations;
+        WeatherLocation weatherLocation;
+        if (weatherPerDay.containsKey(recordDate)) {
+            listOfLocations = weatherPerDay.get(recordDate);
+
+            // Search that the location(dev_id) exists
+            Optional<WeatherLocation> wLocation = listOfLocations.stream()
+                    .filter((wl) -> wl.getDev_id().equals(devId))
+                    .findAny();
+
+            if (wLocation.isPresent())
+                return wLocation.get();
+
+        } else
+            listOfLocations = new ArrayList<>();
+
+        // Create Location
+        weatherLocation = this.createLocationJackson(record);
+        listOfLocations.add(weatherLocation);
+        weatherPerDay.put(recordDate, listOfLocations);
+
+        return weatherLocation;
+    }
+
     // Simple location creation used in getOrCreateLocation and getOrCreateLocationByDate
     public WeatherLocation createLocation(JSONArray record) {
         String devId = WeatherUtils.getWeatherValue(record, "dev_id");
         String name = WeatherUtils.getWeatherValue(record, "name");
         String location = WeatherUtils.getWeatherValue(record, "location");
+
+        return new WeatherLocation(devId, name, location);
+    }
+
+    public WeatherLocation createLocationJackson(List<String> record) {
+        String devId = WeatherUtils.getWeatherValueJackson(record, "dev_id");
+        String name = WeatherUtils.getWeatherValueJackson(record, "name");
+        String location = WeatherUtils.getWeatherValueJackson(record, "location");
 
         return new WeatherLocation(devId, name, location);
     }
@@ -132,10 +181,13 @@ public class WeatherSummary {
         if (weatherLocations.isEmpty()) {
             System.out.println("There is no location's data");
         }
+        long startTime = System.nanoTime();
 
         System.out.println("Overall Statistics\n\n");
 
         getStatisticsByLocations(weatherLocations);
+
+        WeatherUtils.calculateTimeSince(startTime, "Overall statistics time");
     }
 
     private void getStatisticsByLocations(List<WeatherLocation> weatherLocations) {
@@ -174,6 +226,7 @@ public class WeatherSummary {
      * We use getLocationWeatherData to print and calculate each location statistics
      */
     public void getStatisticsByLocation() {
+        long startTime = System.nanoTime();
         if (weatherLocations.isEmpty()) {
             System.out.println("There is no location's data");
         }
@@ -184,6 +237,7 @@ public class WeatherSummary {
             getLocationWeatherData(location);
             System.out.println("\n\n");
         }
+        WeatherUtils.calculateTimeSince(startTime, "Statistics per location time");
     }
 
     /*
@@ -192,6 +246,7 @@ public class WeatherSummary {
      * per day
      */
     public void getStatisticsByDate() {
+        long startTime = System.nanoTime();
         Set<String> days = weatherPerDay.keySet();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -218,6 +273,7 @@ public class WeatherSummary {
 
         }
 
+        WeatherUtils.calculateTimeSince(startTime, "Statistics per day");
     }
 
     /*
@@ -287,6 +343,7 @@ public class WeatherSummary {
             System.out.println("\n\nThere is no data in the period provided :( \n\n");
             return;
         }
+        long startTime = System.nanoTime();
 
         int numberOfRecords = 0;
         for (var location : weatherLocations)
@@ -295,6 +352,7 @@ public class WeatherSummary {
         System.out.printf("%n%nWeather information from %d records: %n%n", numberOfRecords);
 
         getStatisticsByLocations(weatherLocations);
+        WeatherUtils.calculateTimeSince(startTime, "Statistics by date range");
     }
 
     public Integer getNumberOfValidRecords() {
